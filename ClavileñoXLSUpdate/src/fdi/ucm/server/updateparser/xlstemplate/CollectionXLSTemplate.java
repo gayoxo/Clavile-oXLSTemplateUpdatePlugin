@@ -353,7 +353,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				    	CT.setAmbitos(ALIst);
 				    	Ambito=new Integer(Ambito+1);
 				    	Doc.getDescription().add(CT);
-				    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
+				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
 						
 					}
 			    	
@@ -444,7 +444,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				    	CT.setAmbitos(ALIst);
 				    	Ambito=new Integer(Ambito+1);
 				    	Doc.getDescription().add(CT);
-				    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
+				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
 						
 					}
 			    	

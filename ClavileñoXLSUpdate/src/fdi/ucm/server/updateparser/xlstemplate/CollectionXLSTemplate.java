@@ -21,6 +21,9 @@ import fdi.ucm.server.updateparser.xlstemplate.struture.HojaNueva;
 import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -290,6 +293,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				  
 			   List<HSSFCell> Lista_celda_temporal = Datos_celdas.get(FilaX);
 			 
+			   Integer Ambito=0;
 			   for (int ColumnaX = 0; ColumnaX < Lista_celda_temporal.size(); ColumnaX++) {
 			 
 			 
@@ -338,10 +342,22 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		    	 }
 			    else 
 			    	{
-			    	CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
-			    	CompleteTextElement CT=new CompleteTextElement(C, Valor_de_celda);
-			    	Doc.getDescription().add(CT);
-			    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
+			    	
+			    	ArrayList<String> ValuesTotal=ProcessValue(Valor_de_celda);
+			    	
+			    	for (int i = 0; i < ValuesTotal.size(); i++) {
+						CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
+				    	CompleteTextElement CT=new CompleteTextElement(C, ValuesTotal.get(i));
+				    	ArrayList<Integer> ALIst = new ArrayList<Integer>();
+				    			ALIst.add(Ambito);
+				    	CT.setAmbitos(ALIst);
+				    	Ambito=new Integer(Ambito+1);
+				    	Doc.getDescription().add(CT);
+				    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
+						
+					}
+			    	
+			    	
 			    	}
 			      
 			     }
@@ -367,6 +383,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 					if (FilaX!=0)
 						coleccionstatica.getEstructuras().add(Doc);
 			 
+					Integer Ambito=0;
 			   for (int ColumnaX = 0; ColumnaX < Lista_celda_temporal.size(); ColumnaX++) {
 			 
 			  
@@ -417,10 +434,19 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		    	 }
 			    else 
 			    	{
-			    	CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
-			    	CompleteTextElement CT=new CompleteTextElement(C, Valor_de_celda);
-			    	Doc.getDescription().add(CT);
-			    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
+			    	ArrayList<String> ValuesTotal=ProcessValue(Valor_de_celda);
+			    	
+			    	for (int i = 0; i < ValuesTotal.size(); i++) {
+						CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
+				    	CompleteTextElement CT=new CompleteTextElement(C, ValuesTotal.get(i));
+				    	ArrayList<Integer> ALIst = new ArrayList<Integer>();
+				    			ALIst.add(Ambito);
+				    	CT.setAmbitos(ALIst);
+				    	Ambito=new Integer(Ambito+1);
+				    	Doc.getDescription().add(CT);
+				    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
+						
+					}
 			    	
 			    	}
 			 
@@ -443,7 +469,29 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	 }
 	 
-	 private CompleteTextElementType generaStructura(String valor_de_celda, CompleteGrammar grammar, HashMap<String, CompleteTextElementType> hashPath) {
+	 private ArrayList<String> ProcessValue(String valor_de_celda) {
+		 Pattern regex = Pattern.compile("^Size:\\d+ (\\{\\w+\\})+$");
+		 Matcher matcher = regex.matcher(valor_de_celda);
+		 ArrayList<String> Salida=new ArrayList<String>();
+		 if (matcher.matches())
+		 {
+			 String Temp=valor_de_celda.replace('{', ' ');
+			 String[] list=Temp.split("}");
+			 Long it=Long.parseLong(list[0].substring(5));
+			 for (int i = 0; i < it; i++) {
+				String E = list[i+1];
+				E=E.trim();
+				Salida.add(E);
+			}
+			 
+		 }else
+		 {
+			 Salida.add(valor_de_celda);
+		 }		 
+		return Salida;
+	}
+
+	private CompleteTextElementType generaStructura(String valor_de_celda, CompleteGrammar grammar, HashMap<String, CompleteTextElementType> hashPath) {
 		 
 		
 		 CompleteTextElementType preproducido = hashPath.get(valor_de_celda);
@@ -509,7 +557,9 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	}
 
 	public static void main(String[] args) {
-	 
+		
+		main2();
+
 	  String fileName = "ejemplo2.xls";
 	 
 	  System.out.println(fileName);
@@ -530,5 +580,12 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		return coleccionstatica;
 	}
 	
-	
+	public static void main2()
+	{
+		//^Size:d+(\\{(w+)\\})+$
+		Pattern regex = Pattern.compile("^Size:\\d+ (\\{\\w+\\})+$");
+		 Matcher matcher = regex.matcher("Size:55 {aaaa}{dd}{ccc}");
+		 System.out.println(matcher.matches());
+
+	}
 }

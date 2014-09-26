@@ -355,39 +355,69 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		else if (hoja instanceof HojaNueva)
 		{
 			
-			//TODO FALta Hacerlo aqui
-			
-			
 			List<List<XSSFCell>> Datos_celdas = ((HojaNueva) hoja).getListaHijos();
 			
 			 String Valor_de_celda;
 			 
-			  for (int i = 0; i < Datos_celdas.size(); i++) {
+			  for (int FilaX = 0; FilaX < Datos_celdas.size(); FilaX++) {
 			 
-				  List<XSSFCell> Lista_celda_temporal = Datos_celdas.get(i);
+				  List<XSSFCell> Lista_celda_temporal = Datos_celdas.get(FilaX);
 				  
-				  CompleteDocuments Doc=new CompleteDocuments(coleccionstatica, Grammar, Integer.toString(i), "");  
-					if (i!=0)
+				  CompleteDocuments Doc=new CompleteDocuments(coleccionstatica, Grammar, Integer.toString(FilaX), "");  
+					if (FilaX!=0)
 						coleccionstatica.getEstructuras().add(Doc);
 			 
-			   for (int j = 0; j < Lista_celda_temporal.size(); j++) {
+			   for (int ColumnaX = 0; ColumnaX < Lista_celda_temporal.size(); ColumnaX++) {
 			 
 			  
 			 
-			     XSSFCell hssfCell = (XSSFCell) Lista_celda_temporal.get(j);
+			     XSSFCell hssfCell = (XSSFCell) Lista_celda_temporal.get(ColumnaX);
 			 
 			     Valor_de_celda = hssfCell.toString();
 			 
-			    if (i==0)
+			     if (ColumnaX==0)
+			     {
+			    	 Doc.setDescriptionText(Valor_de_celda);
+			    	 try {
+			    		 Doc.setClavilenoid(Long.parseLong(Valor_de_celda));
+						} catch (Exception e) {
+							Doc.setClavilenoid(counterbase);
+							counterbase--;
+						}
+			    	
+			     }
+			     else if (ColumnaX==1)
+			     {
+			    	 Doc.setDescriptionText(Valor_de_celda);
+
+			    	
+			     }
+			     else
+			     
+			     {
+			    if (FilaX==0)
 			    	 {
 			    	CompleteTextElementType C=generaStructura(Valor_de_celda,Grammar,HashPath);
-			    	Hash.put(new Integer(j), C);
+			    	Hash.put(new Integer(ColumnaX), C);
 			    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
 			    	
 			    	 }
+			    else if (FilaX==1)
+		    	 {
+			    	CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
+			    	try {
+			    		C.setClavilenoid(Long.parseLong(Valor_de_celda));
+					} catch (Exception e) {
+						C.setClavilenoid(-1l);
+					}
+			    	
+		    	Hash.put(new Integer(ColumnaX), C);
+		    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
+		    	
+		    	 }
 			    else 
 			    	{
-			    	CompleteTextElementType C=Hash.get(new Integer(j));
+			    	CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
 			    	CompleteTextElement CT=new CompleteTextElement(C, Valor_de_celda);
 			    	Doc.getDescription().add(CT);
 			    	System.out.print("Valor:" + Valor_de_celda + "\t\t");
@@ -398,6 +428,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			 
 			   System.out.println();
 			 
+			  }
 			  }
 		}
 		

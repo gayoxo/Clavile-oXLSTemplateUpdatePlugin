@@ -355,6 +355,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		else if (hoja instanceof HojaNueva)
 		{
 			
+			//TODO FALta Hacerlo aqui
 			
 			
 			List<List<XSSFCell>> Datos_celdas = ((HojaNueva) hoja).getListaHijos();
@@ -478,7 +479,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 
 	public static void main(String[] args) {
 	 
-	  String fileName = "ejemplo2.xlsx";
+	  String fileName = "ejemplo2.xls";
 	 
 	  System.out.println(fileName);
 	 

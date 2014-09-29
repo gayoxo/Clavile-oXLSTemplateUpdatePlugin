@@ -268,11 +268,11 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	 private void Imprimir_Consola(List<Hoja> HojasEntrada) {
 	 
-		 Long counterbase=-1l;
+		 Long counterbase=Long.MIN_VALUE;
 	
 	for (Hoja hoja : HojasEntrada) {
 		
-		System.out.println("Nombre: " + hoja.getName());
+//		System.out.println("Nombre: " + hoja.getName());
 		
 		CompleteGrammar Grammar=new CompleteGrammar(hoja.getName(), hoja.getName(), coleccionstatica);
 		coleccionstatica.getMetamodelGrammar().add(Grammar);
@@ -303,17 +303,22 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			 
 			     if (ColumnaX==0)
 			     {
-			    	 Doc.setDescriptionText(Valor_de_celda);
 			    	 try {
 			    		 Doc.setClavilenoid(Long.parseLong(Valor_de_celda));
 						} catch (Exception e) {
 							Doc.setClavilenoid(counterbase);
-							counterbase--;
+							counterbase++;
 						}
 			    	
 			     }
 			     else if (ColumnaX==1)
 			     {
+			    	 if (FilaX==1)
+				    	 try {
+				    		 Grammar.setClavilenoid(Long.parseLong(Valor_de_celda));
+							} catch (Exception e) {
+								Grammar.setClavilenoid(-1l);
+							}
 			    	 Doc.setDescriptionText(Valor_de_celda);
 
 			    	
@@ -324,7 +329,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			    	 {
 			    	CompleteTextElementType C=generaStructura(Valor_de_celda,Grammar,HashPath);
 			    	Hash.put(new Integer(ColumnaX), C);
-			    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
+//			    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
 			    	
 			    	 }
 			    else if (FilaX==1)
@@ -337,7 +342,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 					}
 			    	
 		    	Hash.put(new Integer(ColumnaX), C);
-		    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
+//		    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
 		    	
 		    	 }
 			    else 
@@ -353,7 +358,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				    	CT.setAmbitos(ALIst);
 				    	Ambito=new Integer(Ambito+1);
 				    	Doc.getDescription().add(CT);
-				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
+//				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
 						
 					}
 			    	
@@ -416,7 +421,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			    	 {
 			    	CompleteTextElementType C=generaStructura(Valor_de_celda,Grammar,HashPath);
 			    	Hash.put(new Integer(ColumnaX), C);
-			    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
+//			    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
 			    	
 			    	 }
 			    else if (FilaX==1)
@@ -429,7 +434,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 					}
 			    	
 		    	Hash.put(new Integer(ColumnaX), C);
-		    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
+//		    	System.out.print("Columna:" + Valor_de_celda + "\t\t");
 		    	
 		    	 }
 			    else 
@@ -444,7 +449,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				    	CT.setAmbitos(ALIst);
 				    	Ambito=new Integer(Ambito+1);
 				    	Doc.getDescription().add(CT);
-				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
+//				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
 						
 					}
 			    	
@@ -566,7 +571,8 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	 CollectionXLSTemplate C = new CollectionXLSTemplate();
 	 C.Leer_Archivo_Excel(fileName);
-	 C.toString();
+	 
+	 System.out.println(C);
 	 }
 
 	@Override

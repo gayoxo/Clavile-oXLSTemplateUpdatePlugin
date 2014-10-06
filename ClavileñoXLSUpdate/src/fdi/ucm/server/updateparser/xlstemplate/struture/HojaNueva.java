@@ -16,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 public class HojaNueva extends Hoja {
 
 	private java.util.List<List<XSSFCell>> ListaHijos;
+	private java.util.List<List<XSSFCell>> ListaAmbitos;
 
 	public HojaNueva(String name) {
 		super(name);
@@ -34,5 +35,13 @@ public class HojaNueva extends Hoja {
 	 */
 	public void setListaHijos(java.util.List<List<XSSFCell>> listaHijos) {
 		ListaHijos = listaHijos;
+	}
+	
+	public java.util.List<List<XSSFCell>> getListaAmbitos() {
+		return ListaAmbitos;
+	}
+	
+	public void setListaAmbitos(java.util.List<List<XSSFCell>> listaAmbitos) {
+		ListaAmbitos = listaAmbitos;
 	}
 }

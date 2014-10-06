@@ -47,6 +47,9 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	private static final String XLS_COLLECTION = "XLS COllection";
 	private static final String COLECCION_A_APARTIR_DE_UN_XLS = "Coleccion a partir de un XLS";
 	private CompleteCollection coleccionstatica;
+	private static final Pattern regexAmbito = Pattern.compile("^Size: \\d+(\\S+\\})+$");
+	private static final Pattern regexDatos = Pattern.compile("^Size: \\d+(\\{\\w+\\})+$");
+	private static final Pattern regexValue = Pattern.compile("^(\\{\\d+\\})+$");
 	
 	public CollectionXLSTemplate() {
 		coleccionstatica=new CompleteCollection(XLS_COLLECTION, COLECCION_A_APARTIR_DE_UN_XLS+ new Timestamp(new Date().getTime()));
@@ -130,40 +133,82 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	   XSSFWorkbook Libro_trabajo = new XSSFWorkbook(fileInputStream);
 	 
-	   
+	   HashMap<String, HojaNueva> ListaAmbitos=new HashMap<String, HojaNueva>();
 	   
 	   int NStilos=Libro_trabajo.getNumberOfSheets();
 		 
 	   for (int i = 0; i < NStilos; i++) {
+
 		   XSSFSheet Hoja_hssf = Libro_trabajo.getSheetAt(i);
-		   HojaNueva Hojax=new HojaNueva(Hoja_hssf.getSheetName());
 		   
-		   Iterator<Row> Iterador_de_Fila = Hoja_hssf.rowIterator();
+		   String Name=Hoja_hssf.getSheetName();
+		   if (!Name.endsWith("_Scopes"))
+		   {
+			   HojaNueva Hojax=new HojaNueva(Hoja_hssf.getSheetName());
+			   
+			   ListaAmbitos.put(Name+"_Scopes", Hojax);
+			   
+			   
+			   Iterator<Row> Iterador_de_Fila = Hoja_hssf.rowIterator();
+				 
+			   List<List<XSSFCell>> Lista_Datos_Celda2 = new ArrayList<List<XSSFCell>>();
+			   
+			   while (Iterador_de_Fila.hasNext()) {
 			 
-		   List<List<XSSFCell>> Lista_Datos_Celda2 = new ArrayList<List<XSSFCell>>();
-		   
-		   while (Iterador_de_Fila.hasNext()) {
-		 
-			   XSSFRow Fila_hssf = (XSSFRow) Iterador_de_Fila.next();
-		 
-		    Iterator<Cell> iterador = Fila_hssf.cellIterator();
-		 
-		    List<XSSFCell> Lista_celda_temporal = new ArrayList<XSSFCell>();
-		 
-		    while (iterador.hasNext()) {
-		 
-		    	XSSFCell Celda_hssf = (XSSFCell) iterador.next();
-		 
-		     Lista_celda_temporal.add(Celda_hssf);
-		 
-		    }
-		 
-		    Lista_Datos_Celda2.add(Lista_celda_temporal);
-		 
+				   XSSFRow Fila_hssf = (XSSFRow) Iterador_de_Fila.next();
+			 
+			    Iterator<Cell> iterador = Fila_hssf.cellIterator();
+			 
+			    List<XSSFCell> Lista_celda_temporal = new ArrayList<XSSFCell>();
+			 
+			    while (iterador.hasNext()) {
+			 
+			    	XSSFCell Celda_hssf = (XSSFCell) iterador.next();
+			 
+			     Lista_celda_temporal.add(Celda_hssf);
+			 
+			    }
+			 
+			    Lista_Datos_Celda2.add(Lista_celda_temporal);
+			 
+			   }
+			   
+			   Hojax.setListaHijos(Lista_Datos_Celda2);
+			   Salida.add(Hojax);
+		   }
+		   else
+		   {
+			   HojaNueva Hojax= ListaAmbitos.get(Name);
+			   Iterator<Row> Iterador_de_Fila = Hoja_hssf.rowIterator();
+				 
+			   List<List<XSSFCell>> Lista_Datos_Celda2 = new ArrayList<List<XSSFCell>>();
+			   
+			   while (Iterador_de_Fila.hasNext()) {
+			 
+				   XSSFRow Fila_hssf = (XSSFRow) Iterador_de_Fila.next();
+			 
+			    Iterator<Cell> iterador = Fila_hssf.cellIterator();
+			 
+			    List<XSSFCell> Lista_celda_temporal = new ArrayList<XSSFCell>();
+			 
+			    while (iterador.hasNext()) {
+			 
+			    	XSSFCell Celda_hssf = (XSSFCell) iterador.next();
+			 
+			     Lista_celda_temporal.add(Celda_hssf);
+			 
+			    }
+			 
+			    Lista_Datos_Celda2.add(Lista_celda_temporal);
+			 
+			   }
+			   
+			   Hojax.setListaAmbitos(Lista_Datos_Celda2);
+			   
+			   
 		   }
 		   
-		   Hojax.setListaHijos(Lista_Datos_Celda2);
-		   Salida.add(Hojax);
+		  
 	}
 	   
 	   
@@ -209,11 +254,20 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	   HSSFWorkbook Libro_trabajo = new HSSFWorkbook(fsFileSystem);
 	   
+	   HashMap<String, HojaAntigua> ListaAmbitos=new HashMap<String, HojaAntigua>();
+	   
 	   int NStilos=Libro_trabajo.getNumberOfSheets();
 	 
 	   for (int i = 0; i < NStilos; i++) {
 		   HSSFSheet Hoja_hssf = Libro_trabajo.getSheetAt(i);
+		   
+		   String Name=Hoja_hssf.getSheetName();
+		   if (!Name.endsWith("_Scopes"))
+		   {
+		   
 		   HojaAntigua Hojax=new HojaAntigua(Hoja_hssf.getSheetName());
+		   
+		   ListaAmbitos.put(Name+"_Scopes", Hojax);
 		   
 		   Iterator<Row> Iterador_de_Fila = Hoja_hssf.rowIterator();
 			 
@@ -241,6 +295,38 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		   
 		   Hojax.setListaHijos(Lista_Datos_Celda2);
 		   Salida.add(Hojax);
+		   }
+		   else
+		   {
+			   HojaAntigua Hojax= ListaAmbitos.get(Name);
+
+			   Iterator<Row> Iterador_de_Fila = Hoja_hssf.rowIterator();
+				 
+			   List<List<HSSFCell>> Lista_Datos_Celda2 = new ArrayList<List<HSSFCell>>();
+			   
+			   while (Iterador_de_Fila.hasNext()) {
+			 
+			    HSSFRow Fila_hssf = (HSSFRow) Iterador_de_Fila.next();
+			 
+			    Iterator<Cell> iterador = Fila_hssf.cellIterator();
+			 
+			    List<HSSFCell> Lista_celda_temporal = new ArrayList<HSSFCell>();
+			 
+			    while (iterador.hasNext()) {
+			 
+			     HSSFCell Celda_hssf = (HSSFCell) iterador.next();
+			 
+			     Lista_celda_temporal.add(Celda_hssf);
+			 
+			    }
+			 
+			    Lista_Datos_Celda2.add(Lista_celda_temporal);
+			 
+			   }
+			   
+			   Hojax.setListaAmbitos(Lista_Datos_Celda2); 
+		   }
+		   
 	}
 	   
 	   
@@ -282,8 +368,10 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		{
 			
 			List<List<HSSFCell>> Datos_celdas = ((HojaAntigua) hoja).getListaHijos();
+			List<List<HSSFCell>> Datos_celdas_ambito = ((HojaAntigua) hoja).getListaAmbitos();
 			
 			 String Valor_de_celda;
+			 String Valor_de_celda_ambito;
 			 
 			  for (int FilaX = 0; FilaX < Datos_celdas.size(); FilaX++) {
 			 
@@ -292,15 +380,34 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 					coleccionstatica.getEstructuras().add(Doc);
 				  
 			   List<HSSFCell> Lista_celda_temporal = Datos_celdas.get(FilaX);
+			   List<HSSFCell> Lista_celda_temporal_Ambitos;
+			   if (Datos_celdas_ambito.size()>FilaX)
+				  Lista_celda_temporal_Ambitos = Datos_celdas_ambito.get(FilaX);
+			   else
+				   Lista_celda_temporal_Ambitos=new ArrayList<HSSFCell>();
+			   
 			 
 			   Integer Ambito=0;
 			   for (int ColumnaX = 0; ColumnaX < Lista_celda_temporal.size(); ColumnaX++) {
 			 
 			 
 			     HSSFCell hssfCell = Lista_celda_temporal.get(ColumnaX);
+			     
+			     HSSFCell hssfCell_Ambito;
+				   if (Lista_celda_temporal_Ambitos.size()>ColumnaX)
+					   hssfCell_Ambito = Lista_celda_temporal_Ambitos.get(ColumnaX);
+				   else
+					   hssfCell_Ambito=null;
+			     
+			     
 			 
 			     Valor_de_celda = hssfCell.toString();
-			 
+			     
+			     if (hssfCell_Ambito!=null)
+			    	 Valor_de_celda_ambito = hssfCell_Ambito.toString();
+			     else
+			    	 Valor_de_celda_ambito="";
+			     
 			     if (ColumnaX==0)
 			     {
 			    	 try {
@@ -349,14 +456,22 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			    	{
 			    	
 			    	ArrayList<String> ValuesTotal=ProcessValue(Valor_de_celda);
+			    	ArrayList<String> ValuesTotalAmbitos=ProcessValueAmbitos(Valor_de_celda_ambito);
+			    	
 			    	
 			    	for (int i = 0; i < ValuesTotal.size(); i++) {
 						CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
 				    	CompleteTextElement CT=new CompleteTextElement(C, ValuesTotal.get(i));
 				    	ArrayList<Integer> ALIst = new ArrayList<Integer>();
+				    	
+				    	if (i<ValuesTotalAmbitos.size())
+				    		ALIst.addAll(procesaAmbitos(ValuesTotalAmbitos.get(i)));
+				    	else{
 				    			ALIst.add(Ambito);
+				    			Ambito=new Integer(Ambito+1);
+				    		}
+				    	
 				    	CT.setAmbitos(ALIst);
-				    	Ambito=new Integer(Ambito+1);
 				    	Doc.getDescription().add(CT);
 //				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
 						
@@ -369,7 +484,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			 
 			   }
 			 
-			   System.out.println();
+//			   System.out.println();
 			 
 			  }
 		}
@@ -377,15 +492,22 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		{
 			
 			List<List<XSSFCell>> Datos_celdas = ((HojaNueva) hoja).getListaHijos();
+			List<List<XSSFCell>> Datos_celdas_ambito = ((HojaNueva) hoja).getListaAmbitos();
 			
 			 String Valor_de_celda;
+			 String Valor_de_celda_ambito;
 			 
 			  for (int FilaX = 0; FilaX < Datos_celdas.size(); FilaX++) {
 			 
 				  List<XSSFCell> Lista_celda_temporal = Datos_celdas.get(FilaX);
+				  List<XSSFCell> Lista_celda_temporal_Ambitos;
+				   if (Datos_celdas_ambito.size()>FilaX)
+					  Lista_celda_temporal_Ambitos = Datos_celdas_ambito.get(FilaX);
+				   else
+					   Lista_celda_temporal_Ambitos=new ArrayList<XSSFCell>();
 				  
 				  CompleteDocuments Doc=new CompleteDocuments(coleccionstatica, Grammar, Integer.toString(FilaX), "");  
-					if (FilaX!=0)
+					if (FilaX!=0&&FilaX!=1)
 						coleccionstatica.getEstructuras().add(Doc);
 			 
 					Integer Ambito=0;
@@ -395,7 +517,19 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			 
 			     XSSFCell hssfCell = (XSSFCell) Lista_celda_temporal.get(ColumnaX);
 			 
+			     XSSFCell hssfCell_Ambito;
+				   if (Lista_celda_temporal_Ambitos.size()>ColumnaX)
+					   hssfCell_Ambito = Lista_celda_temporal_Ambitos.get(ColumnaX);
+				   else
+					   hssfCell_Ambito=null;
+			     
+			     
 			     Valor_de_celda = hssfCell.toString();
+			     
+			     if (hssfCell_Ambito!=null)
+			    	 Valor_de_celda_ambito = hssfCell_Ambito.toString();
+			     else
+			    	 Valor_de_celda_ambito="";
 			 
 			     if (ColumnaX==0)
 			     {
@@ -410,6 +544,12 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			     }
 			     else if (ColumnaX==1)
 			     {
+			    	 if (FilaX==1)
+				    	 try {
+				    		 Grammar.setClavilenoid(Long.parseLong(Valor_de_celda));
+							} catch (Exception e) {
+								Grammar.setClavilenoid(-1l);
+							}
 			    	 Doc.setDescriptionText(Valor_de_celda);
 
 			    	
@@ -441,13 +581,24 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			    	{
 			    	ArrayList<String> ValuesTotal=ProcessValue(Valor_de_celda);
 			    	
+			    	ArrayList<String> ValuesTotalAmbitos=ProcessValueAmbitos(Valor_de_celda_ambito);
+			    	
+			    	
 			    	for (int i = 0; i < ValuesTotal.size(); i++) {
 						CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
 				    	CompleteTextElement CT=new CompleteTextElement(C, ValuesTotal.get(i));
-				    	ArrayList<Integer> ALIst = new ArrayList<Integer>();
+				    	
+				    	ArrayList<Integer> ALIst=new ArrayList<Integer>();
+				    	
+				    	if (i<ValuesTotalAmbitos.size())
+				    		ALIst.addAll(procesaAmbitos(ValuesTotalAmbitos.get(i)));
+				    	else{
 				    			ALIst.add(Ambito);
+				    			Ambito=new Integer(Ambito+1);
+				    		}
+				    	
 				    	CT.setAmbitos(ALIst);
-				    	Ambito=new Integer(Ambito+1);
+				    	
 				    	Doc.getDescription().add(CT);
 //				    	System.out.print("Valor:" +  ValuesTotal.get(i) + "\t\t");
 						
@@ -457,7 +608,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			 
 			   }
 			 
-			   System.out.println();
+//			   System.out.println();
 			 
 			  }
 			  }
@@ -474,17 +625,70 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	 }
 	 
-	 private ArrayList<String> ProcessValue(String valor_de_celda) {
-		 Pattern regex = Pattern.compile("^Size:\\d+ (\\{\\w+\\})+$");
-		 Matcher matcher = regex.matcher(valor_de_celda);
+	 private ArrayList<java.lang.Integer> procesaAmbitos(
+			String Ambitoscompactados) {
+		 
+		 ArrayList<Integer> ListaAmbitos=new ArrayList<Integer>();
+		 Matcher matcher = regexValue.matcher(Ambitoscompactados.trim());
+		 if (matcher.matches())
+		 {
+		String Temp=Ambitoscompactados.replace('{', ' ');
+		 String[] list=Temp.split("}");
+		 for (String string : list) {
+			 string=string.trim();
+			 Integer nuevo=null;
+			 try {
+				nuevo=Integer.parseInt(string);
+			} catch (Exception e) {
+
+			}
+			 
+			 if (nuevo!=null)
+				 ListaAmbitos.add(nuevo);
+		}
+		 }
+		return ListaAmbitos;
+	}
+
+	private ArrayList<String> ProcessValueAmbitos(String valor_de_celda_ambito) {
+		 
+		 Matcher matcher = regexAmbito.matcher(valor_de_celda_ambito);
 		 ArrayList<String> Salida=new ArrayList<String>();
 		 if (matcher.matches())
 		 {
-			 String Temp=valor_de_celda.replace('{', ' ');
+			 int itend=valor_de_celda_ambito.indexOf("{");
+			 Long it=Long.parseLong(valor_de_celda_ambito.substring(5,itend).trim());
+			 String Temp=valor_de_celda_ambito.substring(itend);
+			 Temp=Temp.replace("{{", "{");
+			 Temp=Temp.replace("}}", "}$");
+			 String[] list=Temp.split("\\$");
+			 for (int i = 0; i < it && i<list.length; i++) {
+				String E = list[i];
+				E=E.trim();
+				Salida.add(E);
+			}
+			 
+		 }else
+		 {
+			 if (!valor_de_celda_ambito.trim().isEmpty())
+				 Salida.add(valor_de_celda_ambito);
+		 }		 
+		return Salida;
+	}
+
+	private ArrayList<String> ProcessValue(String valor_de_celda) {
+		 
+		 Matcher matcher = regexDatos.matcher(valor_de_celda);
+		 ArrayList<String> Salida=new ArrayList<String>();
+		 if (matcher.matches())
+		 {
+			 int itend=valor_de_celda.indexOf("{");
+			 Long it=Long.parseLong(valor_de_celda.substring(5,itend).trim());
+			 String Temp=valor_de_celda.substring(itend);
+			  Temp=Temp.replace('{', ' ');
 			 String[] list=Temp.split("}");
-			 Long it=Long.parseLong(list[0].substring(5));
-			 for (int i = 0; i < it; i++) {
-				String E = list[i+1];
+			 for (int i = 0; i < it && i<list.length; i++) {
+				String E = list[i];
 				E=E.trim();
 				Salida.add(E);
 			}
@@ -564,6 +768,8 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	public static void main(String[] args) {
 		
 		main2();
+		main3();
+		main4();
 
 	  String fileName = "ejemplo2.xls";
 	 
@@ -574,6 +780,18 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	 System.out.println(C);
 	 }
+
+	private static void main3() {
+		 Matcher matcher = regexAmbito.matcher("Size: 55{{10}{10}}{{10}{10}}{{10}{10}}");
+		 System.out.println(matcher.matches());
+		
+	}
+	
+	private static void main4() {
+		 Matcher matcher = regexValue.matcher("{10}{10}{10}{10}{10}{10}");
+		 System.out.println(matcher.matches());
+		
+	}
 
 	@Override
 	public void ProcessInstances() {
@@ -586,11 +804,10 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 		return coleccionstatica;
 	}
 	
-	public static void main2()
+	private static void main2()
 	{
 		//^Size:d+(\\{(w+)\\})+$
-		Pattern regex = Pattern.compile("^Size:\\d+ (\\{\\w+\\})+$");
-		 Matcher matcher = regex.matcher("Size:55 {aaaa}{dd}{ccc}");
+		 Matcher matcher = regexDatos.matcher("Size: 55{aaaa}{dd}{ccc}");
 		 System.out.println(matcher.matches());
 
 	}

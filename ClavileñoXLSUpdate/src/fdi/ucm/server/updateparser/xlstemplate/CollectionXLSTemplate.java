@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import fdi.ucm.server.modelComplete.collection.CompleteCollection;
 import fdi.ucm.server.modelComplete.collection.document.CompleteDocuments;
+import fdi.ucm.server.modelComplete.collection.document.CompleteElement;
 import fdi.ucm.server.modelComplete.collection.document.CompleteTextElement;
 import fdi.ucm.server.modelComplete.collection.grammar.CompleteGrammar;
 import fdi.ucm.server.modelComplete.collection.grammar.CompleteStructure;
@@ -399,7 +400,8 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				   Lista_celda_temporal_Ambitos=new ArrayList<HSSFCell>();
 			   
 			 
-			   Integer Ambito=0;
+			   ArrayList<CompleteTextElement> Ambitar=new ArrayList<CompleteTextElement>();
+			   
 			   for (int ColumnaX = 0; ColumnaX < Lista_celda_temporal.size(); ColumnaX++) {
 			 
 			 
@@ -474,22 +476,18 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			    	ArrayList<String> ValuesTotal=ProcessValue(Valor_de_celda);
 			    	ArrayList<String> ValuesTotalAmbitos=ProcessValueAmbitos(Valor_de_celda_ambito);
 			    	
-			    	
 			    	for (int i = 0; i < ValuesTotal.size(); i++) {
 						CompleteTextElementType C=Hash.get(new Integer(ColumnaX));
 				    	CompleteTextElement CT=new CompleteTextElement(C, ValuesTotal.get(i));
 				    	CT.setDocumentsFather(Doc);
 				    	ArrayList<Integer> ALIst = new ArrayList<Integer>();
 				    	
-				    	if (i<ValuesTotalAmbitos.size())
+				    	if (i<ValuesTotalAmbitos.size())    		
 				    		ALIst.addAll(procesaAmbitos(ValuesTotalAmbitos.get(i)));
-				    	else{
-				    		if (ValuesTotalAmbitos.size()>0)
-				    		{
-				    			ALIst.add(Ambito);
-				    			Ambito=new Integer(Ambito+1);
-				    		}
-				    		}
+				    	else
+				    		if (ValuesTotal.size()>1)
+				    			Ambitar.add(CT);
+				    		
 				    	
 				    	CT.setAmbitos(ALIst);
 				    	if (!CT.getValue().isEmpty())
@@ -502,9 +500,23 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			    	}
 			      
 			     }
-			 
+			     
 			   }
 			 
+			   int maximoIntegerV=buscaelmaximoInteger(Doc);
+			     for (CompleteTextElement completeTextElement : Ambitar) {
+			    	 ArrayList<Integer> maximoInteger=calculamaximo(completeTextElement.getHastype().getClavilenoid(),Doc);
+			    	
+			    	if (maximoInteger.size()>0)
+				    	if (maximoInteger.get(0)<0)
+				    		maximoInteger.set(0, 0);
+				    	else
+				    		{
+				    		maximoIntegerV++;
+				    		maximoInteger.set(0, maximoIntegerV);
+				    		}
+					completeTextElement.setAmbitos(maximoInteger);
+				}
 //			   System.out.println();
 			 
 			  }
@@ -531,7 +543,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 					if (FilaX!=0&&FilaX!=1)
 						coleccionstatica.getEstructuras().add(Doc);
 			 
-					Integer Ambito=0;
+					ArrayList<CompleteTextElement> Ambitar=new ArrayList<CompleteTextElement>();
 			   for (int ColumnaX = 0; ColumnaX < Lista_celda_temporal.size(); ColumnaX++) {
 			 
 			  
@@ -616,13 +628,9 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				    	
 				    	if (i<ValuesTotalAmbitos.size())
 				    		ALIst.addAll(procesaAmbitos(ValuesTotalAmbitos.get(i)));
-				    	else{
-				    		if (ValuesTotalAmbitos.size()>0)
-				    		{
-				    			ALIst.add(Ambito);
-				    			Ambito=new Integer(Ambito+1);
-				    		}
-				    		}
+				    	else
+				    		if (ValuesTotal.size()>1)
+				    			Ambitar.add(CT);
 				    	
 				    	CT.setAmbitos(ALIst);
 				    	
@@ -639,6 +647,22 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 //			   System.out.println();
 			 
 			  }
+			   
+			   int maximoIntegerV=buscaelmaximoInteger(Doc);
+			     for (CompleteTextElement completeTextElement : Ambitar) {
+			    	 ArrayList<Integer> maximoInteger=calculamaximo(completeTextElement.getHastype().getClavilenoid(),Doc);
+			    	
+			    	if (maximoInteger.size()>0)
+				    	if (maximoInteger.get(0)<0)
+				    		maximoInteger.set(0, 0);
+				    	else
+				    		{
+				    		maximoIntegerV++;
+				    		maximoInteger.set(0, maximoIntegerV);
+				    		}
+					completeTextElement.setAmbitos(maximoInteger);
+				}
+			   
 			  }
 		}
 		
@@ -652,8 +676,42 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 	 
 	 
 	 }
-	 
-	 private ArrayList<java.lang.Integer> procesaAmbitos(
+
+
+	private int buscaelmaximoInteger(CompleteDocuments doc) {
+		int max=0;
+		for (CompleteElement iterable_element : doc.getDescription()) {
+			if (iterable_element.getAmbitos().size()>0&&iterable_element.getAmbitos().get(0)>max)
+				max=iterable_element.getAmbitos().get(0);
+		}
+		return max;
+	}
+
+	private ArrayList<Integer> calculamaximo(Long total, CompleteDocuments doc) {
+		ArrayList<Integer> Max=new ArrayList<Integer>();
+		for (CompleteElement long1 : doc.getDescription()) {
+			if (total.equals(long1.getHastype().getClavilenoid())&&long1.getAmbitos().size()>0)
+				{
+				if (Max.isEmpty())
+					for (int i = 0; i < long1.getAmbitos().size(); i++) {
+								Max.add(0);
+					}
+				else if (Max.size()<=long1.getAmbitos().size())
+					for (int i = 0; i < long1.getAmbitos().size(); i++) {
+							if (i>Max.size())
+								Max.add(0);
+							
+								
+					}
+
+				}
+		}
+		return Max;
+	}
+
+
+
+	private ArrayList<java.lang.Integer> procesaAmbitos(
 			String Ambitoscompactados) {
 		 
 		 ArrayList<Integer> ListaAmbitos=new ArrayList<Integer>();

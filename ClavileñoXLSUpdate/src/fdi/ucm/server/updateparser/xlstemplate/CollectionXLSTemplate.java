@@ -425,7 +425,9 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			     if (ColumnaX==0)
 			     {
 			    	 try {
-			    		 Doc.setClavilenoid(Long.parseLong(Valor_de_celda));
+			    		 double Valorposible = Double.parseDouble(Valor_de_celda);
+			    		 long valuecelda=(long)Valorposible;
+			    		 Doc.setClavilenoid(valuecelda);
 						} catch (Exception e) {
 							Doc.setClavilenoid(counterbase);
 							counterbase++;

@@ -388,7 +388,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 			 
 			  for (int FilaX = 0; FilaX < Datos_celdas.size(); FilaX++) {
 			 
-				CompleteDocuments Doc=new CompleteDocuments(coleccionstatica, Grammar, "", "");  
+				CompleteDocuments Doc=new CompleteDocuments(coleccionstatica,  "", "");  
 				if (FilaX!=0&&FilaX!=1)
 					coleccionstatica.getEstructuras().add(Doc);
 				  
@@ -539,7 +539,7 @@ public class CollectionXLSTemplate implements InterfaceXLSTemplateparser {
 				   else
 					   Lista_celda_temporal_Ambitos=new ArrayList<XSSFCell>();
 				  
-				  CompleteDocuments Doc=new CompleteDocuments(coleccionstatica, Grammar, Integer.toString(FilaX), "");  
+				  CompleteDocuments Doc=new CompleteDocuments(coleccionstatica, Integer.toString(FilaX), "");  
 					if (FilaX!=0&&FilaX!=1)
 						coleccionstatica.getEstructuras().add(Doc);
 			 

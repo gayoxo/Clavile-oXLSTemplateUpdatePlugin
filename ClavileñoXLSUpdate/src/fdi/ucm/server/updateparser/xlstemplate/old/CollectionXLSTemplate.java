@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fdi.ucm.server.updateparser.xlstemplate;
+package fdi.ucm.server.updateparser.xlstemplate.old;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,11 +13,10 @@ import fdi.ucm.server.modelComplete.collection.document.CompleteDocuments;
 import fdi.ucm.server.modelComplete.collection.document.CompleteElement;
 import fdi.ucm.server.modelComplete.collection.document.CompleteTextElement;
 import fdi.ucm.server.modelComplete.collection.grammar.CompleteGrammar;
-import fdi.ucm.server.modelComplete.collection.grammar.CompleteStructure;
 import fdi.ucm.server.modelComplete.collection.grammar.CompleteTextElementType;
-import fdi.ucm.server.updateparser.xlstemplate.struture.Hoja;
-import fdi.ucm.server.updateparser.xlstemplate.struture.HojaAntigua;
-import fdi.ucm.server.updateparser.xlstemplate.struture.HojaNueva;
+import fdi.ucm.server.updateparser.xlstemplate.old.struture.Hoja;
+import fdi.ucm.server.updateparser.xlstemplate.old.struture.HojaAntigua;
+import fdi.ucm.server.updateparser.xlstemplate.old.struture.HojaNueva;
 
 import java.io.FileInputStream;
 import java.util.Iterator;

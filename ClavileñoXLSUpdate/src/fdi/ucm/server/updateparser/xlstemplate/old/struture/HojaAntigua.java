@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fdi.ucm.server.updateparser.xlstemplate.struture;
+package fdi.ucm.server.updateparser.xlstemplate.old.struture;
 
 import java.util.ArrayList;
 import java.util.List;

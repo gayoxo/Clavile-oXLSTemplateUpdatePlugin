@@ -18,7 +18,7 @@ import fdi.ucm.server.modelComplete.collection.CompleteLogAndUpdates;
  * @author Joaquin Gayoso-Cabada
  *
  */
-public class SaveRemoteCollectionXLSV2 extends SaveCollection {
+public class SaveRemoteCollectionXLS extends SaveCollection {
 
 	
 	private String FileO = null;
@@ -26,7 +26,7 @@ public class SaveRemoteCollectionXLSV2 extends SaveCollection {
 	private boolean SoloEstructura;
 
 
-	public SaveRemoteCollectionXLSV2() {
+	public SaveRemoteCollectionXLS() {
 		super();
 	}
 	
@@ -84,7 +84,7 @@ public class SaveRemoteCollectionXLSV2 extends SaveCollection {
 	 */
 	@Override
 	public String getName() {
-		return "XLS V2";
+		return "XLS Update Template";
 	}
 	
 	
